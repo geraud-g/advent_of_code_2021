@@ -24,12 +24,14 @@ fn count_measurements_increases(measurements: &[i32], range: usize) -> usize {
         .count()
 }
 
+
 fn is_lower_than_next_window(measurements: &[i32], range: usize, idx: usize) -> bool {
-    let current_measurement = get_window_value(measurements, range, idx);
-    let next_measurement = get_window_value(measurements, range, idx + 1);
+    let current_measurement = sum_range(measurements, range, idx);
+    let next_measurement = sum_range(measurements, range, idx + 1);
     current_measurement < next_measurement
 }
 
-fn get_window_value(measurements: &[i32], range: usize, idx: usize,) -> i32 {
+
+fn sum_range(measurements: &[i32], range: usize, idx: usize,) -> i32 {
     measurements[idx..(idx + range)].iter().sum()
 }
