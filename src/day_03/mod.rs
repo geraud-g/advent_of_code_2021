@@ -1,3 +1,4 @@
+use advent_of_code_2021::utils::helpers::get_char;
 use advent_of_code_2021::utils::inputs::get_file;
 
 pub fn day_03() {
@@ -30,10 +31,10 @@ fn get_power_consumption(diagnostic_report: &[String], line_len: usize) -> i32 {
 fn get_gamma_rate(diagnostic_report: &[String], line_len: usize) -> i32 {
     let mut gamma: i32 = 0;
 
-    for x in 0..line_len {
-        let one_count = count_ones_in_col(diagnostic_report, x);
-        if one_count > diagnostic_report.len() / 2 {
-            gamma |= 1 << (line_len - x - 1);
+    for col_idx in 0..line_len {
+        let nbr_ones = count_ones_in_col(diagnostic_report, col_idx);
+        if nbr_ones > diagnostic_report.len() / 2 {
+            gamma |= 1 << (line_len - col_idx - 1);
         }
     }
     gamma
@@ -47,6 +48,9 @@ fn get_epsilon_rate(gamma_rate: i32, line_len: usize) -> i32 {
 
 
 fn get_life_support_rating(diagnostic_report: &[String], line_len: usize) -> i32 {
+    let oxygen_generator_filter= |nbr_ones, nbr_zeroes| if nbr_ones >= nbr_zeroes { '1' } else { '0' };
+    let co2_scrubber_filter = |nbr_ones, nbr_zeroes| if nbr_ones >= nbr_zeroes { '0' } else { '1' };
+
     let oxygen_generator_rating = get_rating(diagnostic_report, line_len, &oxygen_generator_filter);
     let co2_scrubber_rating = get_rating(diagnostic_report, line_len, &co2_scrubber_filter);
     oxygen_generator_rating * co2_scrubber_rating
@@ -63,26 +67,16 @@ fn get_rating(diagnostic_report: &[String], line_len: usize, filter: &dyn Fn(usi
         let one_count = count_ones_in_col(&lines_to_eval, col_idx);
         let filter_start_by = filter(one_count, lines_to_eval.len() - one_count);
         lines_to_eval = lines_to_eval.iter()
-            .filter(|l| l.chars().nth(col_idx).unwrap().eq(&filter_start_by))
+            .filter(|l| get_char(l, col_idx).eq(&filter_start_by))
             .map(|s| s.to_string()).collect();
     }
     i32::from_str_radix(&lines_to_eval[0], 2).unwrap()
 }
 
 
-fn oxygen_generator_filter(one_count: usize, zero_count: usize) -> char {
-    if one_count >= zero_count { '1' } else { '0' }
-}
-
-
-fn co2_scrubber_filter(one_count: usize, zero_count: usize) -> char {
-    if one_count >= zero_count { '0' } else { '1' }
-}
-
-
 fn count_ones_in_col(diagnostic_report: &[String], col_idx: usize) -> usize {
-    (0..diagnostic_report.len())
-        .map(|y| diagnostic_report[y].chars().nth(col_idx).unwrap())
+    diagnostic_report.iter()
+        .map(|line| get_char(&line, col_idx))
         .filter(|char| *char == '1')
         .count()
 }
