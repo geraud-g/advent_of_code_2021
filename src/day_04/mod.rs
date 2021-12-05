@@ -60,7 +60,7 @@ fn get_input() -> (Vec<u8>, Vec<Board>) {
     let mut boards = vec![];
 
     for (idx, line) in file.enumerate() {
-        let mut new_board = Board{id: idx, ..Default::default()};
+        let mut new_board = Board { id: idx, ..Default::default() };
         let line = re.replace_all(&line.trim(), " ");
         for val in line.split(' ') {
             new_board.numbers.push(val.parse::<u8>().unwrap());
@@ -72,12 +72,12 @@ fn get_input() -> (Vec<u8>, Vec<Board>) {
 
 
 fn play_bingo(numbers: &[u8], boards: &mut [Board], nth_victory: usize) -> u32 {
-    let mut wins = HashSet::new();
+    let mut winner_boards = HashSet::new();
 
     for number in numbers {
         for board in boards.iter_mut() {
-            play_board(board, &mut wins, number);
-            if wins.len() == nth_victory {
+            play_board(board, &mut winner_boards, number);
+            if winner_boards.len() == nth_victory {
                 return *number as u32 * board.sum_unmarked();
             }
         }
@@ -86,12 +86,11 @@ fn play_bingo(numbers: &[u8], boards: &mut [Board], nth_victory: usize) -> u32 {
 }
 
 
-fn play_board(board: &mut Board, wins: &mut HashSet<usize>, number: &u8) {
-    if !board.numbers.contains(&number) || wins.contains(&board.id) {
-        return;
-    }
-    board.marked.insert(*number);
-    if board.won() {
-        wins.insert(board.id);
+fn play_board(board: &mut Board, winner_boards: &mut HashSet<usize>, number: &u8) {
+    if board.numbers.contains(&number) && !winner_boards.contains(&board.id) {
+        board.marked.insert(*number);
+        if board.won() {
+            winner_boards.insert(board.id);
+        }
     }
 }

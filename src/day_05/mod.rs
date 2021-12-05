@@ -1,7 +1,7 @@
-use std::cmp::Ordering;
 use std::collections::HashMap;
 
 use advent_of_code_2021::utils::inputs::get_file;
+
 
 #[derive(Debug, Eq, PartialEq, Hash, Copy, Clone)]
 struct Coord {
@@ -42,9 +42,11 @@ fn get_lines() -> Vec<Line> {
         .collect()
 }
 
+
 fn is_diagonal(line: &Line) -> bool {
     line.0.y != line.1.y && line.0.x != line.1.x
 }
+
 
 fn line_from_string(string: &str) -> Line {
     let mut split = string.split(" -> ");
@@ -65,8 +67,8 @@ fn get_nbr_overlapping_points(lines: &[Line]) -> usize {
 
 fn draw_line(ocean_floor: &mut HashMap<Coord, usize>, line: &Line) {
     let (coord_a, coord_b) = line;
-    let delta_x = get_delta(coord_a.x, coord_b.x);
-    let delta_y = get_delta(coord_a.y, coord_b.y);
+    let delta_x = (coord_b.x - coord_a.x).signum();
+    let delta_y =  (coord_b.y - coord_a.y).signum();
 
     *ocean_floor.entry(coord_a.clone()).or_insert(0) += 1;
     let mut current_point = *coord_a;
@@ -74,13 +76,5 @@ fn draw_line(ocean_floor: &mut HashMap<Coord, usize>, line: &Line) {
     while current_point != *coord_b {
         current_point = Coord { y: current_point.y + delta_y, x: current_point.x + delta_x };
         *ocean_floor.entry(current_point).or_insert(0) += 1;
-    }
-}
-
-fn get_delta(val_a: i32, val_b: i32) -> i32 {
-    match val_a.cmp(&val_b) {
-        Ordering::Less => 1,
-        Ordering::Greater => -1,
-        Ordering::Equal => 0,
     }
 }
