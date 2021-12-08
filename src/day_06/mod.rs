@@ -25,7 +25,7 @@ fn get_input() -> [u64; 9] {
 
 
 fn get_nbr_lanternfish(initial_fish_list: &[u64; 9], iterations: usize) -> u64 {
-    let mut fish_list = initial_fish_list.clone();
+    let mut fish_list = *initial_fish_list;
 
     for _ in 0..iterations {
         let nbr_zero_fish = fish_list[0];

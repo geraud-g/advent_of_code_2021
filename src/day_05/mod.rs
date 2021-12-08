@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use advent_of_code_2021::utils::inputs::get_file;
 
-
 #[derive(Debug, Eq, PartialEq, Hash, Copy, Clone)]
 struct Coord {
     x: i32,
@@ -68,9 +67,9 @@ fn get_nbr_overlapping_points(lines: &[Line]) -> usize {
 fn draw_line(ocean_floor: &mut HashMap<Coord, usize>, line: &Line) {
     let (coord_a, coord_b) = line;
     let delta_x = (coord_b.x - coord_a.x).signum();
-    let delta_y =  (coord_b.y - coord_a.y).signum();
+    let delta_y = (coord_b.y - coord_a.y).signum();
 
-    *ocean_floor.entry(coord_a.clone()).or_insert(0) += 1;
+    *ocean_floor.entry(*coord_a).or_insert(0) += 1;
     let mut current_point = *coord_a;
 
     while current_point != *coord_b {

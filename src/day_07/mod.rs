@@ -4,10 +4,10 @@ pub fn day_07() {
     let input = get_input();
 
     let solution_a = solve_part_a(&input);
-    println!("Solution for Day 6, part A is: {}", solution_a);
+    println!("Solution for Day 7, part A is: {}", solution_a);
 
     let solution_b = solve_part_b(&input);
-    println!("Solution for Day 6, part B is: {}", solution_b);
+    println!("Solution for Day 7, part B is: {}", solution_b);
 }
 
 
@@ -37,8 +37,13 @@ fn solve_part_b(crabs: &[i32]) -> i32 {
     let crab_sum = crabs.iter().sum::<i32>();
     let crab_len = crabs.len() as i32;
     let mean = crab_sum / crab_len;
-    let kek = vec![get_movement_cost_b(crabs, &mean), get_movement_cost_b(crabs, &(mean - 1)), get_movement_cost_b(crabs, &(mean + 1))];
-    *kek.iter().min().unwrap()
+
+    let mean_crabs = vec![
+        get_movement_cost_b(crabs, &mean),
+        get_movement_cost_b(crabs, &(mean - 1)),
+        get_movement_cost_b(crabs, &(mean + 1)),
+    ];
+    *mean_crabs.iter().min().unwrap()
 }
 
 fn get_movement_cost_b(crabs: &[i32], position: &i32) -> i32 {
