@@ -10,6 +10,7 @@ mod day_07;
 mod day_08;
 mod day_09;
 mod day_10;
+mod day_11;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -35,6 +36,7 @@ fn solve_day(day: i32) {
         8 => day_08::day_08,
         9 => day_09::day_09,
         10 => day_10::day_10,
+        11 => day_11::day_11,
         _ => unimplemented!(),
     };
     println!("# Processing Day {} :", day);
