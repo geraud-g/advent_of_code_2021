@@ -9,3 +9,5 @@ edition = "2018"
 [dependencies]
 itertools = "0.10.1"
 regex = "1.5.4"
+ansi_term = "0.12"
+lazy_static = "1.4.0"
