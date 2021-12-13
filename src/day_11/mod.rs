@@ -1,4 +1,3 @@
-use ansi_term::Color;
 use itertools::iproduct;
 
 use advent_of_code_2021::utils::inputs::get_file;
@@ -56,7 +55,7 @@ fn get_sync_step(octopuses: &mut [Vec<u32>]) -> u32 {
             }
         }
         steps += 1;
-        if octopuses.iter().flat_map(|x| x).all(|l| l == &0) {
+        if octopuses.iter().flatten().all(|l| l == &0) {
             return steps;
         }
     }

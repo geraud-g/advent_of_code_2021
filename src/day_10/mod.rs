@@ -27,7 +27,7 @@ fn get_total_corruption_score(navigation_subsystem: &[String]) -> i32 {
 }
 
 
-fn get_line_corruption_score(line: &str) ->i32 {
+fn get_line_corruption_score(line: &str) -> i32 {
     let mut stack = vec![];
 
     for chunk in line.trim().chars() {
