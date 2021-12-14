@@ -6,6 +6,7 @@ use regex::Regex;
 use advent_of_code_2021::utils::inputs::{get_file, LINE_ENDING};
 use advent_of_code_2021::utils::point::Point;
 
+
 lazy_static! {
     static ref REGEX_FOLD_Y: Regex = Regex::new(r"fold along y=(\d+)").unwrap();
     static ref REGEX_FOLD_X: Regex = Regex::new(r"fold along x=(\d+)").unwrap();
@@ -45,6 +46,7 @@ fn get_points(string: &str) -> HashSet<Point> {
         })
         .collect()
 }
+
 
 fn get_instructions(string: &str) -> Vec<Fold> {
     string.lines()
