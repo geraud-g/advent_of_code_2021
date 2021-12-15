@@ -11,11 +11,11 @@ pub fn day_15() {
     let cave = get_input();
 
     let solution_a = dijkstra(&cave);
-    println!("Solution for Day 15, part A is: {:?}", solution_a);
+    println!("Solution for Day 15, part A is: {}", solution_a.unwrap());
 
     let full_cave = get_full_cave(&cave);
     let solution_b = dijkstra(&full_cave);
-    println!("Solution for Day 15, part B is: {:?}", solution_b);
+    println!("Solution for Day 15, part B is: {}", solution_b.unwrap());
 }
 
 
@@ -33,13 +33,11 @@ fn get_full_cave(cave: &[Vec<usize>]) -> Vec<Vec<usize>> {
         for line in cave {
             let mut new_line = vec![];
             for x in 0..5 {
-                for el in line {
-                    let mut val = el + x + y;
-                    if val > 9 {
-                        val -= 9;
-                    }
-                    new_line.push(val);
-                }
+                let line: Vec<_> = line.iter()
+                    .map(|el|el + x + y)
+                    .map(|el| if el > 9 {el - 9} else {el})
+                    .collect();
+                new_line.extend(line)
             }
             new_cave.push(new_line)
         }
@@ -76,7 +74,7 @@ impl PartialOrd for State {
 
 
 
-fn dijkstra(cave: &[Vec<usize>]) -> Option<usize> {
+fn dijkstra(cave: &[Vec<usize>]) -> Result<usize, &'static str> {
     let mut dist = HashMap::new();
     let height = cave.len();
     let width = cave[0].len();
@@ -92,7 +90,7 @@ fn dijkstra(cave: &[Vec<usize>]) -> Option<usize> {
     while let Some(State { cost, position }) = heap.pop() {
         // Alternatively we could have continued to find all shortest paths
         if position.eq(&dest) {
-            return Some(cost);
+            return Ok(cost);
         }
 
         // Important as we may have already found a better way
@@ -112,5 +110,5 @@ fn dijkstra(cave: &[Vec<usize>]) -> Option<usize> {
             }
         }
     }
-    None
+    Err("Could not find any solution")
 }
