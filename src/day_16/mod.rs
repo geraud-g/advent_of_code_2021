@@ -1,6 +1,5 @@
 use advent_of_code_2021::utils::inputs::get_file;
 
-
 pub fn day_16() {
     let bits = get_input();
 
@@ -28,7 +27,7 @@ fn get_input() -> Vec<bool> {
     for c in get_file("./src/day_16/input.txt").chars() {
         let u8_val = u8::from_str_radix(&c.to_string(), 16).unwrap();
         for bit in format!("{:04b}", u8_val).chars() {
-            binary_vec.push(if '0'.eq(&bit) { false } else { true });
+            binary_vec.push(!'0'.eq(&bit));
         }
     }
     binary_vec
@@ -47,7 +46,7 @@ fn get_packets(global_packet: &[bool]) -> Vec<Packet> {
 
 
 fn get_next_packet(global_packet: &[bool]) -> Option<Packet> {
-    if global_packet.iter().all(|p| *p == false) {
+    if global_packet.iter().all(|p| !(*p)) {
         return None;
     }
     let version = get_val_from_bin(&global_packet[..3]);
@@ -58,9 +57,9 @@ fn get_next_packet(global_packet: &[bool]) -> Option<Packet> {
     }
     let length_type_id = get_val_from_bin(&global_packet[6..7]);
     if length_type_id == 0 {
-        return Some(get_packet_by_length(&global_packet[7..], version, type_id));
+        Some(get_packet_by_length(&global_packet[7..], version, type_id))
     } else if length_type_id == 1 {
-        return Some(get_packet_by_numbers(&global_packet[7..], version, type_id));
+        Some(get_packet_by_numbers(&global_packet[7..], version, type_id))
     } else {
         panic!("Unknown packet ID: {}", type_id)
     }
@@ -79,7 +78,7 @@ fn get_packet_with_literal(global_packet: &[bool], version: usize, type_id: usiz
         let is_last_packet = !chunk[0];
         let chunk_val = get_val_from_bin(&chunk[1..]);
         packet.length += 5;
-        packet.value = packet.value << 4;
+        packet.value <<= 4;
         packet.value += chunk_val;
         if is_last_packet {
             break;
@@ -135,19 +134,19 @@ fn get_val_from_bin(packet: &[bool]) -> usize {
         if *val {
             value |= 1;
         }
-        value = value << 1;
+        value <<= 1;
     }
-    value = value >> 1;
+    value >>= 1;
     value
 }
 
 
 fn get_version_sum(packets: &[Packet]) -> usize {
-    packets.iter().map(|packet|get_count_rec(packet)).sum()
+    packets.iter().map(|packet| get_count_rec(packet)).sum()
 }
 
 fn get_count_rec(packet: &Packet) -> usize {
-    packet.version + &packet.sub_packets.iter().map(|c| get_count_rec(c)).sum()
+    packet.version + packet.sub_packets.iter().map(|c| get_count_rec(c)).sum::<usize>()
 }
 
 fn eval_packets(packet: &Packet) -> usize {
