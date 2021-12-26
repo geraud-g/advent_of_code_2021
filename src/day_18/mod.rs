@@ -7,7 +7,7 @@ pub fn day_18() {
     let numbers = get_input(&mut arena);
 
 
-    let magnitude = get_magnitude_sum(&mut arena, &numbers);
+    let magnitude = get_magnitude_sum(&arena, &numbers);
     println!("Solution for Day 18, part A is: {}", magnitude);
 
     let mut arena = ArenaTree::default();
@@ -26,15 +26,15 @@ pub struct ArenaTree {
 }
 
 impl ArenaTree {
-    fn add_new_node(&mut self, value: Option<u8>) -> usize {
+    fn add_new_node(&mut self, value: Option<u8>, parent: Option<usize>) -> usize {
         let new_idx = self.arena.len();
-        let new_node = Node::new_node(new_idx, value);
+        let new_node = Node::new_node(new_idx, value, parent);
         self.arena.push(new_node);
         new_idx
     }
 
     fn merge_nodes(&mut self, left_node: usize, right_node: usize) -> usize {
-        let new_node_idx = self.add_new_node(None);
+        let new_node_idx = self.add_new_node(None, None);
         self.arena[new_node_idx].left = Some(left_node);
         self.arena[new_node_idx].right = Some(right_node);
 
@@ -68,11 +68,11 @@ pub struct Node {
 
 
 impl Node {
-    fn new_node(idx: usize, value: Option<u8>) -> Self {
+    fn new_node(idx: usize, value: Option<u8>, parent: Option<usize>) -> Self {
         Self {
             idx,
             val: value,
-            parent: None,
+            parent,
             left: None,
             right: None,
         }
@@ -106,18 +106,18 @@ fn parse_line(arena: &mut ArenaTree, line: &str) -> usize {
             break;
         }
     }
-    let current_node_idx = arena.add_new_node(None);
+    let current_node_idx = arena.add_new_node(None, None);
 
     if let Some(idx) = separator_idx {
         let new_left_node = match &line[..idx].parse::<u8>() {
-            Ok(ok) => arena.add_new_node(Some(*ok)),
+            Ok(ok) => arena.add_new_node(Some(*ok), None),
             Err(_) => parse_line(arena, &line[1..idx - 1])
         };
         arena.arena[current_node_idx].left = Some(new_left_node);
         arena.arena[new_left_node].parent = Some(current_node_idx);
 
         let new_right_node = match &line[(idx + 1)..].parse::<u8>() {
-            Ok(ok) => arena.add_new_node(Some(*ok)),
+            Ok(ok) => arena.add_new_node(Some(*ok), None),
             Err(_) => parse_line(arena, &line[(idx + 2)..line.len() - 1])
         };
         arena.arena[current_node_idx].right = Some(new_right_node);
@@ -135,8 +135,7 @@ fn parse_line(arena: &mut ArenaTree, line: &str) -> usize {
 fn get_magnitude_sum(arena: &ArenaTree, numbers: &[usize]) -> usize {
     let mut new_arena = arena.clone();
     let root_idx = sum(&mut new_arena, numbers);
-    let magnitude = get_magnitude(&mut new_arena, root_idx);
-    magnitude
+    get_magnitude(&mut new_arena, root_idx)
 }
 
 
@@ -173,13 +172,11 @@ fn split_if_required(arena: &mut ArenaTree, current_node: usize) -> bool {
         if value >= 10 {
             let left_val = value / 2;
             let right_val = left_val + value % 2;
-            let left_idx = arena.add_new_node(Some(left_val));
-            let right_idx = arena.add_new_node(Some(right_val));
+            let left_idx = arena.add_new_node(Some(left_val), Some(current_node));
+            let right_idx = arena.add_new_node(Some(right_val), Some(current_node));
             arena.arena[current_node].left = Some(left_idx);
             arena.arena[current_node].right = Some(right_idx);
             arena.arena[current_node].val = None;
-            arena.arena[left_idx].parent = Some(current_node);
-            arena.arena[right_idx].parent = Some(current_node);
             return true;
         }
         return false;
@@ -286,4 +283,3 @@ fn get_max_combination_value(arena: &mut ArenaTree, numbers: &[usize]) -> usize 
         .map(|n| get_magnitude_sum(arena, &n))
         .max().unwrap()
 }
-
